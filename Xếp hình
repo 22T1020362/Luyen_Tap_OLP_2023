@@ -1,0 +1,142 @@
+#include <bits/stdc++.h>
+#define taskname "B"
+using namespace std;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+bool isExist(vector<int> cntPiece, int start) {
+    if (cntPiece[start] == 0) return false;
+    if (cntPiece[7] + cntPiece[8] != 1) return false;
+    if (cntPiece[7] == 1) {
+        if (cntPiece[2] == 0 && cntPiece[4] == 0) return false;
+        if (start == 1) return cntPiece[1] == cntPiece[4];
+        if (start == 2) {
+            if (cntPiece[1] != cntPiece[4]) return false;
+            if (cntPiece[1] == 0 && cntPiece[3] != 0) return false;
+            return true;
+        }
+        if (start == 3) return cntPiece[1] + 1 == cntPiece[4];
+        if (start == 4) {
+            if (cntPiece[1] + 1 != cntPiece[4]) return false;
+            if (cntPiece[1] == 0 && cntPiece[3] != 0) return false;
+            return true;
+        }
+    }
+    else {
+        if (cntPiece[1] == 0 && cntPiece[3] == 0) return false;
+        if (start == 1) {
+            if (cntPiece[1] != cntPiece[4] + 1) return false;
+            if (cntPiece[4] == 0 && cntPiece[2] != 0) return false;
+            return true;
+        }
+        if (start == 2) return cntPiece[1] == cntPiece[4] + 1;
+        if (start == 3) {
+            if (cntPiece[1] != cntPiece[4]) return false;
+            if (cntPiece[4] == 0 && cntPiece[2] != 0) return false;
+            return true;
+        }       
+        if (start == 4) return cntPiece[1] == cntPiece[4];
+    }
+    return false;
+}
+void Solve() {
+    int n; cin >> n;
+    vector<int> cntPiece(9, 0);
+    vector<vector<int>> pieces(9);
+    for (int i = 1; i <= n; i++) {
+        int x, a; cin >> x >> a;
+        pieces[x].push_back(a);
+        cntPiece[x]++;
+    }
+    for (int i = 1; i <= 4; i++) 
+        sort(pieces[i].begin(), pieces[i].end(), greater<int>());
+
+    if (pieces[5].size() + pieces[6].size() != 1) 
+        return void(cout << -1);
+
+    if (n == 2) {
+        if (cntPiece[5] == 1 && cntPiece[8] == 1) cout << pieces[5].back() << " " << pieces[8].back();
+        else if (cntPiece[6] == 1 && cntPiece[7] == 1) cout << pieces[6].back() << " " << pieces[7].back();
+        return ;
+    }
+
+    vector<int> ans, type;
+    if (pieces[5].size() == 1) {
+        ans.push_back(pieces[5].back());
+        type.push_back(5);
+        pieces[5].pop_back();
+        cntPiece[5]--;
+        if (!isExist(cntPiece, 3) && !isExist(cntPiece, 4)) 
+            return void(cout << -1);
+    }
+    else {
+        ans.push_back(pieces[6].back());
+        type.push_back(6);
+        pieces[6].pop_back();
+        cntPiece[6]--;
+        if (!isExist(cntPiece, 1) && !isExist(cntPiece, 2)) 
+            return void(cout << -1);
+    }
+    
+    vector<vector<int>> adj(9);
+    adj[1].push_back(3);
+    adj[1].push_back(4);
+    adj[1].push_back(8);
+    adj[2].push_back(1);
+    adj[2].push_back(2);
+    adj[2].push_back(7);
+    adj[3].push_back(4);
+    adj[3].push_back(3);
+    adj[3].push_back(8);
+    adj[4].push_back(1);
+    adj[4].push_back(2);
+    adj[4].push_back(7);
+    adj[5].push_back(3);
+    adj[5].push_back(4);
+    adj[5].push_back(8);
+    adj[6].push_back(1);
+    adj[6].push_back(2);
+    adj[6].push_back(7);
+
+    for (int i = 2; i < n - 1; i++) {
+        int ansType = -1, nextVal = 2e9;
+        for (int j: adj[type.back()]) {
+            if (cntPiece[j] == 0) continue;
+
+            vector<int> _cntPiece = cntPiece;
+            _cntPiece[j]--;
+
+            bool haveExist = false;
+            for (int k: adj[j]) 
+                haveExist = max(haveExist, isExist(_cntPiece, k));
+
+            if (haveExist && nextVal > pieces[j].back()) {
+                nextVal = pieces[j].back();
+                ansType = j;
+            }
+        }
+
+        if (ansType == -1) return void(cout << -1);
+        ans.push_back(pieces[ansType].back());
+        pieces[ansType].pop_back();
+        cntPiece[ansType]--;
+        type.push_back(ansType);
+    }
+
+    for (int i = 1; i <= 8; i++)
+        if (cntPiece[i] != 0) ans.push_back(pieces[i].back());
+
+    for (int i = 0; i < n; i++) cout << ans[i] << " ";
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
