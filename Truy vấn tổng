@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+#define ll long long
+const ll MOD = 1e9 + 7;
+const int N = 1e6 + 5;
+#define MO                        \
+    ios_base::sync_with_stdio(0); \
+    cin.tie(0);                   \
+    cout.tie(0)
+using namespace std;
+int main()
+{
+    int n;
+    cin >> n;
+    while (n--){
+    	ll l,r;
+    	cin >> l >> r;
+    	l--;
+    	ll l1 = l / 9;
+    	ll l2 = l % 9;
+    	ll r1 = r / 9;
+    	ll r2 = r % 9;
+		ll k = 9 * 10 / 2;
+        ll ans = (k * r1 + r2 * (r2 + 1) / 2) - (k * l1 + l2 * (l2 + 1) / 2);
+    	cout << ans <<endl; 
+	}
+}
