@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+const ll inf = 1e18;
+const long double esp=1e-12;
+const ll mod=1e9+7;
+using namespace std;
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<pair<int, int>, null_type, less<pair<int, int>>, rb_tree_tag, tree_order_statistics_node_update>
+ll dp[70][2][70000];
+int du[70];
+ll n,k,m; 
+void solve(string s) {
+  s=' '+s;
+  dp[m][0][0]=1;
+  for (int i=m; i>0; i--) {
+    for (int j=0; j<k; j++) {
+      int r = (du[i-1]+j) % k;
+      if (s[i] == '0') {
+      dp[i-1][1][j] += dp[i][1][j];
+      dp[i-1][0][j] += dp[i][0][j];
+      dp[i-1][1][r] += dp[i][1][j];
+      } else {
+      dp[i-1][1][r] += dp[i][1][j];
+      dp[i-1][1][j] += (dp[i][0][j]+dp[i][1][j]);
+      dp[i-1][0][r] += dp[i][0][j];
+      }
+    }
+  }
+}
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(0); 
+  cin >> n >> k;
+  du[0]=1;
+  for (int i=1; i<=69;i++) {
+    du[i] = (du[i-1] * 3) % k;
+  }
+  string s="";
+  int ok = false;
+  for (int i=60; i>=0; i--) {
+    if (((ll)1 << i)  <= n) {
+      n-= (ll) 1<< i;
+      s+='1';
+      ok = true;
+    } else {
+      if (ok) s+='0';
+    }
+  }
+  m = s.size();
+  reverse(s.begin(),s.end());
+  solve(s);
+  ll ans = 0;
+  for (int i=0; i<=k-1;i++) {
+    // cout << dp[0][1][i]+ dp[0][0][i] <<'\n';
+    if( i == 0) {
+      ans ^= (dp[0][1][i]+dp[0][0][i]-1);
+    } else ans ^= (dp[0][1][i]+dp[0][0][i]);
+  }
+  cout << ans;
+  return 0;
+}
