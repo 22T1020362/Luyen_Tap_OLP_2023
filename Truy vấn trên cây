@@ -1,0 +1,134 @@
+#include <bits/stdc++.h>
+#define taskname "D"
+using namespace std;
+
+typedef pair<int, int> ii;
+
+template<int BITSIZE>
+class TrieBit {
+private:
+    int64_t getXOR(int64_t x, int timeAdd, bool isMin = false) {
+        int64_t ans = 0;
+        TrieBit::iterator *p = this->root;
+        for (int k = BITSIZE; k >= 0; --k) {
+            int bit = ((x >> k) & 1) ^ isMin;
+            if (p->child[bit ^ 1] && p->child[bit ^ 1]->timeAdd <= timeAdd) p = p->child[bit ^ 1], ans += (bit ^ 1) * (1ll << k);
+            else if (p->child[bit] && p->child[bit]->timeAdd <= timeAdd) p = p->child[bit], ans += bit * (1ll << k);
+            else return -1;
+        }
+        return ans ^ x;
+    }
+
+public:
+    struct iterator {
+        int occur, timeAdd;
+        iterator *child[2];
+        iterator() : occur(0), timeAdd(1e9) { child[0] = child[1] = nullptr; }
+    } *root;
+
+    TrieBit() { root = new TrieBit::iterator(); }
+    ~TrieBit() { clear(); }
+    void clear() {
+        function<void(TrieBit::iterator*&)> _clear = [&](TrieBit::iterator *&root){
+            if (!root) return ;
+            _clear(root->child[0]);
+            _clear(root->child[1]);
+            delete root;
+        };
+        _clear(this->root);
+        this->root = new TrieBit::iterator();
+    }
+    void add(int64_t x, int timeAdd) {
+        TrieBit::iterator *p = this->root;
+        for (int k = BITSIZE; k >= 0; --k) {
+            int bit = (x >> k) & 1;
+            if (!p->child[bit]) p->child[bit] = new TrieBit::iterator();
+            ++p->occur;
+            p->timeAdd = min(p->timeAdd, timeAdd);
+            p = p->child[bit];
+        }
+        ++p->occur;
+        p->timeAdd = min(p->timeAdd, timeAdd);
+    }
+    int64_t maxXOR(int64_t x, int timeAdd) { return getXOR(x, timeAdd); }
+    int64_t minXOR(int64_t x, int timeAdd) { return getXOR(x, timeAdd, true); }
+};
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+
+void Solve() {
+    int n; cin >> n;
+    vector<vector<int>> adj(2);
+    vector<ii> prefix(2, ii(0, 0));
+    vector<vector<array<int, 3>>> query(2);
+
+    int nVert = 1, nQuery = 0;
+    for (int i = 1; i <= n; i++) {
+        string type; cin >> type;
+        if (type == "Add") {
+            int x, y; cin >> x >> y;
+            nVert++;
+            prefix.push_back({prefix[x].first ^ y, i});
+            adj[x].push_back(nVert);
+
+            adj.push_back(vector<int>());
+            query.push_back(vector<array<int, 3>>());
+        }
+        else {
+            int x, y; cin >> x >> y;
+            query[y].push_back({x, i, ++nQuery});
+        }
+    }
+
+    vector<int> ans(nQuery + 1);
+    vector<vector<int>> child(nVert + 1);
+    vector<TrieBit<30>> trie(nVert + 1); 
+    function<void(int, int)> dfs = [&](int u, int p) {
+        for (int &v: adj[u]) {
+            if (v == p) continue;
+            dfs(v, u);
+        }
+
+        for (int &v: adj[u]) {
+            if (v == p) continue;
+
+            if (child[u].size() < child[v].size()) {
+                swap(child[u], child[v]);
+                swap(trie[u].root, trie[v].root);
+            }
+
+            for (int &k: child[v]) {
+                child[u].push_back(k);
+                trie[u].add(prefix[k].first, prefix[k].second);
+            }
+
+            trie[v].clear();
+            child[v].clear();
+        }
+
+        child[u].push_back(u);
+        trie[u].add(prefix[u].first, prefix[u].second);
+
+        for (int i = 0; i < query[u].size(); i++) {
+            array<int, 3> x = query[u][i];
+            ans[x[2]] = trie[u].maxXOR(prefix[x[0]].first, x[1]);
+        }
+    };
+    dfs(1, 1);
+
+    for (int i = 1; i <= nQuery; i++)
+        cout << ans[i] << "\n";
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
