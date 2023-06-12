@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+#define taskname "B"
+using namespace std;
+
+typedef long long ll;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+
+void Solve() {
+    int n, q; cin >> n >> q;
+    vector<ll> c(n + 1);
+    for (int i = 1; i <= n; i++) cin >> c[i];
+    sort(c.begin() + 1, c.end());
+
+    vector<ll> prefix(n + 1, 0);
+    for (int i = 1; i <= n; i++) 
+        prefix[i] = prefix[i - 1] + c[i];
+    
+    while (q--) {
+        ll k; cin >> k;
+        int m; cin >> m;
+
+        int pos = lower_bound(c.begin() + 1, c.end(), 2 * k) - c.begin();
+        if (n - pos + 1 > m) pos = n - m + 1;
+
+        ll X = 0, Y = 0;
+        if (pos <= n) {
+            X += (n - pos + 1) * k;
+            Y += prefix[n] - prefix[pos - 1] - (n - pos + 1) * k;
+        }
+
+        m -= (n - pos + 1);
+        if (m > 0) {
+            int pos2 = upper_bound(c.begin() + 1, c.end(), k) - c.begin();
+
+            auto count = [&](ll x) {
+                int cntL = upper_bound(c.begin() + 1, c.begin() + pos2, x) - c.begin() - 1;
+                int cntR = pos - (lower_bound(c.begin() + pos2, c.begin() + pos, 2 * k - x) - c.begin());
+                return cntL + cntR;
+            };
+
+            ll lt = 0, rt = c.back();
+            while (lt + 1 < rt) {
+                ll md = (lt + rt) >> 1;
+                if (count(md) >= m) rt = md;
+                else lt = md;
+            }
+
+            int cntL = upper_bound(c.begin() + 1, c.begin() + pos2, rt) - c.begin() - 1;
+            int cntR = lower_bound(c.begin() + pos2, c.begin() + pos, 2 * k - rt) - c.begin();
+            X += prefix[cntL] + ((pos - cntR) * 2 * k - (prefix[pos - 1] - prefix[cntR - 1])) - max(0, count(rt) - m) * rt;
+
+            // cout << rt << " " << cntL << " " << cntR << "\n";
+        }
+
+        cout << X - Y << "\n";
+    }
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
