@@ -1,0 +1,37 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+
+void Solve() {
+    int n, r, s; cin >> n >> r >> s;
+    
+    while (n--) {
+        vector<string> a(r);
+        for (auto &i: a) cin >> i;
+
+        int maxPos = 0, minPos = 1e9;
+        for (int i = 0; i < r; i++)
+            for (int j = 0; j < s; j++)
+                if (a[i][j] == '#') {
+                    maxPos = max(maxPos, r - i);
+                    minPos = min(minPos, r - i);
+                }
+        
+        cout << maxPos - minPos << "\n";
+    }
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
