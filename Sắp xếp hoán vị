@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+#define taskname "C"
+using namespace std;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+void Solve() {
+    int n; cin >> n;
+    vector<int> a(2 * n + 1);
+    for (int i = 1; i <= 2 * n; i++) cin >> a[i];
+
+    auto transition = [&](int type) {
+        if (type == 0) {
+            for (int i = 2; i <= 2 * n; i += 2) swap(a[i], a[i - 1]);
+        }
+        else {
+            for (int i = 1; i <= n; i++) swap(a[i], a[i + n]);
+        }
+    };
+
+    auto isPerm = [&]() {
+        for (int i = 1; i <= 2 * n; i++)
+            if (a[i] != i) return false;
+        return true;
+    };
+
+    if (n % 2 == 1) {
+        int ans = -1, type = 0;
+        for (int i = 0; i <= 2 * n; i++, type ^= 1) {
+            if (isPerm()) {
+                ans = i;
+                break;
+            }
+            transition(type);
+        }
+
+        cout << min(ans, 2 * n - ans);
+    } 
+    else {
+        int ans = -1, type = 0;
+        for (int i = 0; i <= 4; i++, type ^= 1) {
+            if (isPerm()) {
+                ans = i;
+                break;
+            }
+            transition(type);
+        }
+
+        cout << min(ans, 4 - ans);
+    }
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
