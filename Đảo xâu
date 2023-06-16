@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+class Map{
+	public :
+		int A[26] = {0};
+		Map(){
+			for (int i = 0 ;i  < 26 ; i++) A[i] = 0;
+		}
+		void in () {
+			for (int i = 0 ;i  < 26 ; i++) {
+			cout<<A[i]<<char(i+'a')<<" ";
+			}
+		}
+		friend Map operator + (Map a, Map b);
+		friend Map operator - (Map a, Map b);
+		friend bool operator == (Map a, Map b);
+};
+Map operator + (Map a, Map b){
+	Map c;
+	for (int i = 0 ; i < 26 ;i++) {
+		c.A[i] = a.A[i] + b.A[i];
+	}
+	return c;
+}
+Map operator - (Map a, Map b){
+	Map c;
+	for (int i = 0 ; i < 26 ;i++) {
+		c.A[i] = a.A[i] - b.A[i];
+	}
+	return c;
+}
+bool operator == (Map a, Map b){
+	for (int i = 0 ; i < 26 ;i++) {
+		if (a.A[i] != b.A[i]) return false;
+	}
+	return true;
+}
+Map B[50000];
+Map A;
+int main(){
+	string s;
+	cin>>s;
+	for (int i = 0 ;i < s.size();i++){
+		A.A[s[i] - 'a']++;
+		B[i] = A;
+	}
+	int t ; cin>>t;
+	while (t--) {
+		int x1,y1,x2,y2;
+		cin>>x1>>y1>>x2>>y2;
+		x1-- ; y1--; x2--; y2--;
+		if (B[y1] - B[x1-1] == B[y2] - B[x2-1]) cout<<"YES\n";
+		else cout<<"NO\n";
+	}
+}
