@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+#define taskname "D"
+using namespace std;
+
+int nTest = 1;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+    cin >> nTest;
+}
+
+void Solve() {
+    int n, k; cin >> n >> k;
+    vector<vector<int>> adj(n + 1);
+    for (int i = 2; i <= n; i++) {
+        int p; cin >> p;
+        adj[p].push_back(i);
+    }
+
+    int maxHigh = 1;
+    function<void(int, int, int)> dfs = [&](int u, int p, int high) {
+        maxHigh = max(maxHigh, high);
+        if (high == k) return ;
+        for (int &v: adj[u]) {
+            if (v == p) continue;
+            dfs(v, u, high + 1);
+        }
+    };
+    dfs(1, 0, 1);
+
+    cout << 2 * (k - 1) - (maxHigh - 1) << "\n";
+}
+
+int main(){
+    Input();
+    while (nTest--) Solve();
+    return 0;
+}
