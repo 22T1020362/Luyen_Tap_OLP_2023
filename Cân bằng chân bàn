@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+using namespace std;
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    long long t;
+    cin>>t;
+    while (t--){
+        long long a[10];
+        for (int i=1 ;i<=4; i++) cin>>a[i];
+        sort(a+1,a+4+1);
+        long long n;
+        cin>>n;
+        if (a[1]==a[4]) cout<<"Yes"; else {
+            if (a[1]+n==a[4] && a[2]==a[4]) cout<<"Yes"; else cout<<"No";
+        }
+        cout<<"\n";
+    }
+    
+}
