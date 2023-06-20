@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+#define taskname "D"
+using namespace std;
+
+typedef long long ll;
+const ll mod = 1e9+7;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+void Solve() {
+    string s; cin >> s;
+    int n = s.size();
+    s = " " + s;
+
+    ll ans = 0, cnt0 = 0, cnt1 = 0, cntSequence = 1;
+    for (int i = 1; i <= n; i++) {
+        ll x = max(ans, 1ll);
+        if (s[i] == '?') {
+            ans = (2 * ans % mod + cnt1) % mod;
+            cnt1 = (2 * cnt1 % mod + cntSequence % mod) % mod;
+            cnt0 = (2 * cnt0 % mod + cntSequence % mod) % mod; 
+            cntSequence = (cntSequence * 2) % mod;
+        }
+        else if (s[i] == '1'){
+            cnt1 = (cnt1 + cntSequence % mod) % mod;
+        }
+        else {
+            ans = (ans % mod + cnt1) % mod;
+            cnt0 = (cnt0 + cntSequence % mod) % mod; 
+        }
+
+        // cout << ans << " " << cnt0 << " " << cnt1 << "\n";
+    }
+
+    cout << ans;
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
