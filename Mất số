@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+using namespace std;
+long long gcd(long long x, long long y){
+    if (y==0) return x;
+    return gcd(y,x%y);
+}
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    long long t;
+    cin>>t;
+    while (t--){
+        long long b,d;
+        cin>>b>>d;
+        long long res=b/(d/gcd(b,d));
+        if (b%(d/gcd(b,d))==0) res--;
+        cout<<res<<"\n";
+    }
+    
+}
