@@ -1,0 +1,68 @@
+#include <bits/stdc++.h>
+#include <vector>
+ 
+using namespace std;
+ 
+#ifdef LOCAL
+#include "algo/debug.h"
+#else
+#define debug(...) 42
+#endif
+const int N = 1e5 + 10;
+using i64 = long long;
+
+double dp[N][10], lg[N];
+i64 a[N];
+int trace[N][10];
+bool vis[N][10];
+int n, d;
+vector<int> ans;
+
+void solve() {
+  cin >> n >> d;
+  for (int i = 1; i <= n; i++) {
+    cin >> a[i];
+    lg[i] = log10(a[i]);
+    debug(lg[i]);
+  }
+  for (int i = 0; i <= n; i++) {
+    for (int j = 0; j < 10; j++) dp[i][j] = -1e9, trace[i][j] = -1;
+  }
+  
+  dp[0][1] = 0;
+  for (int i = 1; i <= n; i++) {
+    for (int j = 0; j <= 9; j++) {
+      dp[i][j] = dp[i - 1][j];
+    }
+    for (int j = 0; j <= 9; j++) {
+      int k = (j * a[i]) % 10;
+      if (dp[i - 1][j] < 0) continue;
+      if (dp[i - 1][j] + lg[i] >= dp[i][k]) {
+        dp[i][k] = dp[i - 1][j] + lg[i];
+        trace[i][k] = j;
+      }
+    }
+  }
+  for (int i = n; i >= 1; i--) {
+    if (trace[i][d] != -1) {
+      ans.push_back(a[i]);
+      d = trace[i][d];
+    }
+  }
+  if (ans.empty()) {
+    cout << "-1\n";
+  } else {
+    cout << (int) ans.size() << '\n';
+    sort(ans.begin(), ans.end());
+    for (int i : ans) cout << i << ' ';
+  }
+}
+
+int main() {
+  cin.tie(nullptr) -> sync_with_stdio(false);
+  int TC = 1;
+  //cin >> TC;
+  while (TC--) {
+    solve();
+  }
+}
